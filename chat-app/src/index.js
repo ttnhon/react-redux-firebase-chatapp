@@ -3,6 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { combineReducers } from 'redux';
+import { firebaseReducer } from 'react-redux-firebase';
+
+const rootReducer = combineReducers({
+  firebase: firebaseReducer
+})
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
