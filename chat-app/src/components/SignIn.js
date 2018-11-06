@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import firebase from 'firebase'
+import firebase from '../config/firebaseConfig'
 import UsersList from './UsersList.js';
+import { addUser } from '../store/actions/userAction';
+import { connect } from 'react-redux';
 
-var config = {
-  apiKey: "AIzaSyBOYTlv7UGsbd896HM5nre6BfFDesPl3sY",
-  authDomain: "fir-react-redux-edaf5.firebaseapp.com",
-  databaseURL: "https://fir-react-redux-edaf5.firebaseio.com",
-  storageBucket: "fir-react-redux-edaf5.appspot.com",
-  messagingSenderId: "661614553631"
-};
-firebase.initializeApp(config);
+// var config = {
+//   apiKey: "AIzaSyBOYTlv7UGsbd896HM5nre6BfFDesPl3sY",
+//   authDomain: "fir-react-redux-edaf5.firebaseapp.com",
+//   databaseURL: "https://fir-react-redux-edaf5.firebaseio.com",
+//   storageBucket: "fir-react-redux-edaf5.appspot.com",
+//   messagingSenderId: "661614553631"
+// };
+// firebase.initializeApp(config);
 
 
 class SignIn extends Component {
@@ -31,10 +33,58 @@ class SignIn extends Component {
 	}
 
     componentDidMount() {
+    	const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+    	let props = this.props;
+    	let flag = 0;
 	    firebase.auth().onAuthStateChanged(user => {
-	      console.log(user);
-	      this.setState({isSignedIn: !!user})
-	    })
+		    console.log('user: ',user);
+		    this.setState({isSignedIn: !!user})
+
+		    var db = firebase.firestore();
+		    db.collection('users').where("uid","==",user.uid)
+		    	.get()
+		    	.then(function(querySnapshot) {
+		    		if(querySnapshot.size === 0) {
+		    			let userInfo = {
+						   	name: user.displayName,
+						    email: user.email,
+						    uid: user.uid,
+						    photoURL: user.photoURL,
+						    lastOnlineDate: timestamp,
+						    isOnline: true
+						};
+					    props.addUser(userInfo);
+		    		}
+		    		else {
+			    		querySnapshot.forEach(function(doc) {
+			    			flag = 1;
+			    			console.log(flag);
+			    			db.collection('users').doc(doc.id).update({
+			    				lastOnlineDate: timestamp,
+			    				isOnline: true
+			    			});
+			    			
+			    		});
+			    	}
+		    	});
+		})
+	}
+
+	handleSignOut() {
+		firebase.auth().signOut();
+		const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+
+		var db = firebase.firestore();
+		db.collection('users').where("uid","==",firebase.auth().currentUser.uid)
+		    .get()
+		    .then(function(querySnapshot) {
+		    	querySnapshot.forEach(function(doc) {
+		    		db.collection('users').doc(doc.id).update({
+		    			lastOnlineDate: timestamp,
+		    			isOnline: false
+		    		});
+		    	});
+		    })
 	}
 
 	render() {
@@ -69,6 +119,12 @@ class SignIn extends Component {
 	        </div>
 		)
 	}
-  }
+}
 
-export default SignIn;
+const mapDispatchToProps = (dispatch) => {
+	return {
+		addUser: (user) => dispatch(addUser(user))
+	}
+}
+
+export default connect(null, mapDispatchToProps)(SignIn);
