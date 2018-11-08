@@ -10,9 +10,3 @@ export const addUser = (user) => {
 		})
 	}
 }
-
-export const updateUser = (user) => {
-	return (dispatch, getState) => {
-		dispatch({ type: 'UPDATE_USER', user });
-	}
-}

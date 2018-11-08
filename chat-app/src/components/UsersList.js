@@ -1,9 +1,14 @@
 import React, { Component } from 'react';
 import './UsersList.scss';
+import '../assets/css/bootstrap.min.css';
 import { connect } from 'react-redux';
+import { firestoreConnect } from 'react-redux-firebase';
+import { compose } from 'redux';
+import getLeftTime from '../util/util'
 
 class UsersList extends Component {
 	state = {
+		searchInput: '',
 		messages: [],
 		message: {
 			time: '10:14 AM, Today', 
@@ -11,37 +16,36 @@ class UsersList extends Component {
 			content: ''
 		}
 	}
-
+	onChangeHandler(e){
+	    this.setState({
+	      searchInput: e.target.value,
+	    })
+	  }
 	render() {
 		const { users } = this.props;
+
 		return (
 			<div className="container clearfix">
         <div className="people-list" id="people-list">
           <div className="search">
-            <input type="text" placeholder="search" />
+            <input type="text" placeholder="search" value={this.state.searchInput} onChange={this.onChangeHandler.bind(this)} />
             <i className="fa fa-search" />
           </div>
           <ul className="list">
-            <li className="clearfix">
-              <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />
-              <div className="about">
-                <div className="name">Vincent Porter</div>
-                <div className="status">
-                  <i className="fa fa-circle online" /> online
-                </div>
-              </div>
-            </li>
-            
-            { users && users.map(user => {
+            { users && users.filter(user => this.state.searchInput==='' || user.name.toUpperCase().includes(this.state.searchInput.toUpperCase())).map((user,index) => {
               	return (
-              		<li className="clearfix">
-		              <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_02.jpg" alt="avatar" />
+              		<li key={index} className="clearfix">
+		              <img height="42" width="42" src={user.photoURL} alt="avatar" />
 		              <div className="about">
-		                <div className="name">{user.displayName}</div>
+		                <div className="name">{user.name}</div>
+		                
 		                <div className="status">
-		                  <i className="fa fa-circle online" /> {user.isOnline ? 'online' : 'offline' }
+		                  <i className="fa fa-circle" /> {user.isOnline ? 'online' 
+		                  	: getLeftTime(Math.abs(Date.now() - user.lastOnlineDate.toDate()) / 36e5)
+		                  }
 		                </div>
 		              </div>
+		            
 		            </li>
               	)
               })}
@@ -94,8 +98,13 @@ class UsersList extends Component {
 
 const mapStatetoProps = (state) => {
 	return {
-		users: state.user.users
+		users: state.firestore.ordered.users
 	}
 }
 
-export default connect(mapStatetoProps)(UsersList);
+export default compose(
+	connect(mapStatetoProps),
+	firestoreConnect([
+		{ collection: 'users' }
+	])
+)(UsersList);

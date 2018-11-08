@@ -34,6 +34,7 @@ class SignIn extends Component {
 
     componentDidMount() {
     	const timestamp = firebase.firestore.FieldValue.serverTimestamp();
+    	
     	let props = this.props;
     	let flag = 0;
 	    firebase.auth().onAuthStateChanged(user => {
@@ -100,7 +101,7 @@ class SignIn extends Component {
 	                </div>
 	                <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 	                  <ul className="nav navbar-nav navbar-right">
-	                    <li><a><button className="btn btn-danger" onClick={()=>firebase.auth().signOut()}>Sign out</button></a></li>
+	                    <li><a><button className="btn btn-danger" onClick={this.handleSignOut}>Sign out</button></a></li>
 	                  </ul>
 	                </div>
 	              </div>
