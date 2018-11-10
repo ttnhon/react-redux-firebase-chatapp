@@ -18,5 +18,23 @@ const getLeftTime = (hour) => {
 			return 'left 1 hour ago';
 		return 'left '+res+' hours ago';
 	}
+};
+
+function addZero(i) {
+    if (i < 10) {
+        i = "0" + i;
+    }
+    return i;
 }
-export default getLeftTime;
+
+function getMessSentTime(date) {
+	var now = new Date();
+	var dString = (date.getDate())+'/'+(date.getMonth()+1)+'/'+date.getFullYear();
+	var res = addZero(date.getHours())+':'+addZero(date.getMinutes())+':'+addZero(date.getSeconds())+', ';
+	if(date.setHours(0,0,0,0) == now.setHours(0,0,0,0)) {
+		dString = 'Today';
+	}
+	return res+dString;
+};
+
+export { getLeftTime, getMessSentTime };

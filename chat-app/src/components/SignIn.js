@@ -106,7 +106,7 @@ class SignIn extends Component {
 	                </div>
 	              </div>
 	            </nav>
-	            <UsersList />
+	            <UsersList currentId={firebase.auth().currentUser.uid} />
 	          </span>)
 	         :
 	          (<span>
