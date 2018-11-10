@@ -16,7 +16,11 @@ body {
   color: white;
 }
 
-img {
+.image {
+  width: 300px;
+}
+
+.avt {
   height: 42px;
   width: 42px
 }
@@ -53,13 +57,12 @@ img {
   
   ul {
     padding: 20px;
-    height: 770px;
- 
-    
-    
+    height: 580px;
+    list-style-type: none;
     
     li {
       padding-bottom: 20px;
+
     }
   }
   
@@ -126,7 +129,7 @@ img {
     padding: 30px 30px 20px;
     border-bottom: 2px solid white;
     overflow-y: scroll;
-    height: 575px;
+    height: 400px;
     
     .message-data {
       margin-bottom: 15px;

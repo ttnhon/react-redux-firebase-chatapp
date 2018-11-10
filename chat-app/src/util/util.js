@@ -2,7 +2,7 @@ const getLeftTime = (hour) => {
 	var res = 0
 	if(hour < 1){
 		res = Math.round(hour*60);
-		if(res === 1)
+		if(res <= 1)
 			return 'left 1 min ago';
 		return 'left '+res+' mins ago';
 	}
@@ -31,7 +31,7 @@ function getMessSentTime(date) {
 	var now = new Date();
 	var dString = (date.getDate())+'/'+(date.getMonth()+1)+'/'+date.getFullYear();
 	var res = addZero(date.getHours())+':'+addZero(date.getMinutes())+':'+addZero(date.getSeconds())+', ';
-	if(date.setHours(0,0,0,0) == now.setHours(0,0,0,0)) {
+	if(date.setHours(0,0,0,0) === now.setHours(0,0,0,0)) {
 		dString = 'Today';
 	}
 	return res+dString;
