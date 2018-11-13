@@ -6,7 +6,8 @@ import firebase from '../config/firebaseConfig'
 import { connect } from 'react-redux';
 import { firestoreConnect } from 'react-redux-firebase';
 import { compose } from 'redux';
-import { getLeftTime, getMessSentTime } from '../util/util'
+import { getLeftTime, getMessSentTime } from '../util/util';
+import $ from 'jquery';
 
 class UsersList extends Component {
 	state = {
@@ -46,7 +47,7 @@ class UsersList extends Component {
 								to: state.currentChatToUser.uid,
 								mess: [{
 									content: state.message,
-									//date: timestamp,
+									date: Date.now(),
 									owner: 0
 								}]
 							})
@@ -58,7 +59,7 @@ class UsersList extends Component {
 					    			var mess = doc.data().mess;
 					    			var mes = {
 					    				content: state.message,
-					    				//date: timestamp,
+					    				date: Date.now(),
 					    				owner: 1
 					    			}
 					    			mess.push(mes);
@@ -76,7 +77,7 @@ class UsersList extends Component {
 			    			var mess = doc.data().mess;
 			    			var mes = {
 			    				content: state.message,
-			    				//date: timestamp,
+			    				date: Date.now(),
 			    				owner: 0
 			    			}
 			    			mess.push(mes);
@@ -94,7 +95,7 @@ class UsersList extends Component {
 		}
 	}
 
-	imageError() {
+	imageError(e) {
 		this.setState({imageErr: true})
 	}
 
@@ -161,22 +162,28 @@ componentDidUpdate() {
           { this.state.currentChatToUser ?
             <div>
             { messages && messages.filter(message => (message.from===state.currentId && message.to===state.currentChatToUser.uid)||(message.to===state.currentId && message.from===state.currentChatToUser.uid)).map((message,index) => {
-              	return (<ul key={index}>{message.mess.map((mes,index) => {
+              	return (<ul className="chat-h" key={index}>{message.mess.map((mes,index) => {
               		//console.log(mes.date.toDate());
               		let owner = mes.owner;
               		if(message.to===state.currentId) {
               			owner = 1-owner;
               		}
+              		let date = new Date(mes.date);
+              		console.log(date);
               		//const date = getMessSentTime(mes.date.toDate());
               		return (
               			<li key={index} className="clearfix">
-			                {/*<div className={owner===0?"message-data align-right":"message-data"}>
-			                  <span className="message-data-time"></span> &nbsp; &nbsp;
-			                </div>*/}
+			                <div className={owner===0?"message-data align-right":"message-data align-left"}>
+			                  <span className="message-data-time">{getMessSentTime(date)}</span> &nbsp; &nbsp;
+			                </div>
 			                <div className={owner===0?"message other-message float-right":"message my-message"}>
 			                  {mes.content}
 			                </div>
-			                {this.state.imageErr ? '' : (<img className="image" onError={this.imageError.bind(this)} src={mes.content} />)}
+			                <div>
+			                <img id={"img-mess "+index} onError={(e) => {
+			                	$("#img-mess "+index).remove()
+			                }} className="image" src={mes.content} alt="" />
+			                </div>
 			            </li>
               		);
               	})}</ul>);

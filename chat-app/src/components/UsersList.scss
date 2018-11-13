@@ -27,7 +27,7 @@ body {
 
 .container {
   margin: 0 auto;
-  width: 60%;
+  width: 830px;
   background: #444753;
   border-radius: 5px;
 }
@@ -53,6 +53,10 @@ body {
   .fa-search {
     position: relative;
     left: -25px;
+  }
+
+  .chat-h {
+    list-style-type: none;
   }
   
   ul {
@@ -86,7 +90,7 @@ body {
 }
 
 .chat {
-  width: 490px;
+  width: 500px;
   float:left;
   background: #F2F5F8;
   border-top-right-radius: 5px;
